@@ -50,6 +50,26 @@
   #screen-manager p{font-size:13.5px; color:#B7BDD6; max-width:300px; line-height:1.6; margin-bottom:26px;}
   #managerBackBtn{background:var(--purple); color:#fff; border:none; padding:12px 26px; border-radius:12px; font-weight:700; font-size:13.5px; cursor:pointer;}
 
+  /* ---------- MANAGER DASHBOARD ---------- */
+  #screen-manager-dashboard header.mgr-head{background:var(--navy); color:#fff; padding:18px 20px 16px; display:flex; align-items:center; justify-content:space-between;}
+  #screen-manager-dashboard header.mgr-head .title{font-weight:700; font-size:18px;}
+  #screen-manager-dashboard header.mgr-head button{background:rgba(255,255,255,0.12); border:1.5px solid rgba(255,255,255,0.35); color:#fff; padding:8px 14px; border-radius:10px; font-weight:600; font-size:12px; cursor:pointer;}
+  .mgr-body{padding:20px; flex:1; overflow-y:auto; padding-bottom:60px;}
+  .mgr-section{margin-bottom:30px;}
+  .mgr-section-title{font-weight:700; font-size:15px; color:var(--navy); margin:0 0 4px;}
+  .mgr-section-sub{font-size:12px; color:#9A9585; margin-bottom:14px;}
+  .mgr-item{background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:10px;}
+  .mgr-item .info{flex:1;}
+  .mgr-item .iname{font-weight:700; font-size:14px;}
+  .mgr-item .imeta{color:#9A9585; font-size:11.5px; margin-top:1px;}
+  .mgr-item button{background:none; border:none; font-size:16px; cursor:pointer; padding:4px 6px;}
+  .mgr-item .invite-btn{color:var(--teal-dim);}
+  .mgr-item .delete-btn{color:var(--coral);}
+  .mgr-add-box{background:#fff; border:1.5px dashed var(--line); border-radius:12px; padding:14px; margin-top:10px;}
+  .mgr-add-box input{width:100%; border:1.5px solid var(--line); border-radius:10px; padding:10px 12px; font-family:'Poppins'; font-size:13.5px; margin-bottom:8px;}
+  .mgr-add-box button{width:100%; background:var(--teal); color:#fff; border:none; padding:12px; border-radius:10px; font-weight:700; font-size:13.5px; cursor:pointer;}
+  .mgr-empty{color:#B7B2A1; font-size:12.5px; font-style:italic; padding:8px 0;}
+
   /* ---------- HOME ---------- */
   #screen-home header.home-head{background:var(--teal); color:#fff; padding:20px 20px 18px;}
   #screen-home header.home-head .greet{font-weight:700; font-size:20px;}
@@ -203,17 +223,80 @@ window.LOGO_RD_URI = LOGO_RD_URI;
   </a>
 </section>
 
-<!-- ========== MANAGER STUB ========== -->
+<!-- ========== MANAGER LOGIN ========== -->
 <section class="screen" id="screen-manager">
   <div class="icon">🛠</div>
-  <h2>Manager tools are coming soon</h2>
-  <p>This is where managers will add and edit clients, set up carer accounts, and manage access. Not built yet — just reserving the spot.</p>
-  <button id="managerBackBtn">← Back to login</button>
+  <h2>Manager Login</h2>
+  <p>Manage clients and support workers.</p>
+  <div class="login-form" style="max-width:280px;">
+    <label>Manager Email</label>
+    <input type="email" id="mgrLoginEmail" placeholder="manager@example.com">
+    <label>Password</label>
+    <input type="password" id="mgrLoginPassword" placeholder="••••••••">
+  </div>
+  <button id="managerLoginConfirmBtn" style="margin-top:22px; background:var(--purple); color:#fff; border:none; padding:13px 30px; border-radius:12px; font-weight:700; font-size:14px; cursor:pointer;">Log In as Manager</button>
+  <button id="managerBackBtn" style="margin-top:14px; background:none; border:none; color:#B7BDD6; font-size:12.5px; cursor:pointer; text-decoration:underline;">← Back to login</button>
 </section>
+
+<!-- ========== MANAGER DASHBOARD ========== -->
+<section class="screen" id="screen-manager-dashboard">
+  <header class="mgr-head">
+    <div class="title">🛠 Manager Dashboard</div>
+    <button id="mgrLogoutBtn">Log out</button>
+  </header>
+  <div class="mgr-body">
+
+    <div class="mgr-section">
+      <div class="mgr-section-title">Clients</div>
+      <div class="mgr-section-sub">Everyone your support workers can log shifts for</div>
+      <div id="mgrClientList"></div>
+      <div class="mgr-add-box">
+        <input type="text" id="mgrNewClientName" placeholder="Client name">
+        <button id="mgrAddClientBtn">+ Add Client</button>
+      </div>
+    </div>
+
+    <div class="mgr-section">
+      <div class="mgr-section-title">Support Workers</div>
+      <div class="mgr-section-sub">Carers with access to the app</div>
+      <div id="mgrCarerList"></div>
+      <div class="mgr-add-box">
+        <input type="text" id="mgrNewCarerName" placeholder="Full name">
+        <input type="tel" id="mgrNewCarerPhone" placeholder="Phone number">
+        <input type="email" id="mgrNewCarerEmail" placeholder="Email address">
+        <button id="mgrAddCarerBtn">+ Add Support Worker</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ========== INVITE SHEET ========== -->
+<div class="sheet-overlay" id="inviteOverlay">
+  <div class="sheet">
+    <h3>Invite <span id="inviteTargetName">—</span></h3>
+    <a class="send-option" id="inviteSmsOption" href="#">
+      <div class="ic">💬</div>
+      <div><div class="label">Text invite</div><div class="detail" id="inviteSmsDetail">No phone number on file</div></div>
+    </a>
+    <a class="send-option" id="inviteWaOption" href="#" target="_blank">
+      <div class="ic">🟢</div>
+      <div><div class="label">WhatsApp invite</div><div class="detail" id="inviteWaDetail">No phone number on file</div></div>
+    </a>
+    <a class="send-option" id="inviteEmailOption" href="#">
+      <div class="ic">✉️</div>
+      <div><div class="label">Email invite</div><div class="detail" id="inviteEmailDetail">No email on file</div></div>
+    </a>
+    <div class="sheet-btn-row">
+      <button class="sheet-cancel" id="inviteCancelBtn" style="flex:1;">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <!-- ========== HOME ========== -->
 <section class="screen" id="screen-home">
   <header class="home-head">
+
     <div class="greet">Hi, <span id="homeCarerName">there</span> 👋</div>
     <div class="sub">Select a client to start logging</div>
   </header>
@@ -400,10 +483,11 @@ async function airtableCall(action, table, extra = {}) {
 function showScreen(name){
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   $('screen-' + name).classList.add('active');
-  $('bottomNav').style.display = (name === 'login' || name === 'home' || name === 'reward' || name === 'manager') ? 'none' : 'flex';
+  $('bottomNav').style.display = (name === 'login' || name === 'home' || name === 'reward' || name === 'manager' || name === 'manager-dashboard') ? 'none' : 'flex';
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.screen === name));
   if(name === 'timeline') loadAndRenderTimeline();
   if(name === 'handover') loadAndRenderHandover();
+  if(name === 'manager-dashboard') loadAndRenderManagerDashboard();
   window.scrollTo(0,0);
 }
 document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => showScreen(btn.dataset.screen)));
@@ -418,6 +502,10 @@ $('loginBtn').addEventListener('click', async () => {
 });
 $('managerLoginBtn').addEventListener('click', () => showScreen('manager'));
 $('managerBackBtn').addEventListener('click', () => showScreen('login'));
+$('managerLoginConfirmBtn').addEventListener('click', () => {
+  showScreen('manager-dashboard');
+});
+$('mgrLogoutBtn').addEventListener('click', () => showScreen('login'));
 
 // ================= LOAD DATA =================
 async function loadCarersAndClients(){
@@ -786,6 +874,126 @@ $('backHomeBtn').addEventListener('click', () => {
   renderHome();
   showScreen('home');
 });
+
+// ================= MANAGER DASHBOARD =================
+async function loadAndRenderManagerDashboard(){
+  await loadCarersAndClients();
+  renderMgrClients();
+  renderMgrCarers();
+}
+
+function renderMgrClients(){
+  $('mgrClientList').innerHTML = clients.length ? clients.map(name => `
+    <div class="mgr-item">
+      <div class="info"><div class="iname">${name}</div></div>
+      <button class="delete-btn" data-client="${name}" title="Remove client">🗑️</button>
+    </div>
+  `).join('') : '<div class="mgr-empty">No clients yet — add the first one below.</div>';
+
+  document.querySelectorAll('#mgrClientList .delete-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const name = btn.dataset.client;
+      const id = clientRecordIds[name];
+      if(!id) return;
+      if(!confirm(`Remove ${name} from clients? This won't delete their past log entries.`)) return;
+      try{ await airtableCall('delete', 'Clients', { recordId: id }); }catch(err){ console.warn(err); }
+      await loadAndRenderManagerDashboard();
+    });
+  });
+}
+
+$('mgrAddClientBtn').addEventListener('click', async () => {
+  const name = $('mgrNewClientName').value.trim();
+  if(!name) return;
+  try{
+    await airtableCall('create', 'Clients', { fields: { Name: name, Active: true } });
+    $('mgrNewClientName').value = '';
+    await loadAndRenderManagerDashboard();
+  }catch(err){ console.warn(err); alert('Could not add client — check connection and try again.'); }
+});
+
+function renderMgrCarers(){
+  $('mgrCarerList').innerHTML = carers.length ? carers.filter(c => c.name && c.name !== 'Unnamed carer').map(c => `
+    <div class="mgr-item">
+      <div class="info">
+        <div class="iname">${c.name}</div>
+        <div class="imeta">${c.email || '—'} · ${c.phone || '—'}</div>
+      </div>
+      <button class="invite-btn" data-recordid="${c.recordId}" title="Send invite">📤</button>
+      <button class="delete-btn" data-recordid="${c.recordId}" title="Remove support worker">🗑️</button>
+    </div>
+  `).join('') : '<div class="mgr-empty">No support workers yet — add the first one below.</div>';
+
+  document.querySelectorAll('#mgrCarerList .invite-btn').forEach(btn => {
+    btn.addEventListener('click', () => openInviteSheet(btn.dataset.recordid));
+  });
+  document.querySelectorAll('#mgrCarerList .delete-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const c = carers.find(x => x.recordId === btn.dataset.recordid);
+      if(!c) return;
+      if(!confirm(`Remove ${c.name} as a support worker? This won't delete their past log entries.`)) return;
+      try{ await airtableCall('delete', 'Carers', { recordId: c.recordId }); }catch(err){ console.warn(err); }
+      await loadAndRenderManagerDashboard();
+    });
+  });
+}
+
+$('mgrAddCarerBtn').addEventListener('click', async () => {
+  const name = $('mgrNewCarerName').value.trim();
+  const phone = $('mgrNewCarerPhone').value.trim();
+  const email = $('mgrNewCarerEmail').value.trim();
+  if(!name){ alert('Enter a name for the support worker.'); return; }
+  try{
+    await airtableCall('create', 'Carers', { fields: { Name: name, Phone: phone, Email: email, Active: true } });
+    $('mgrNewCarerName').value = ''; $('mgrNewCarerPhone').value = ''; $('mgrNewCarerEmail').value = '';
+    await loadAndRenderManagerDashboard();
+  }catch(err){ console.warn(err); alert('Could not add support worker — check connection and try again.'); }
+});
+
+// ================= INVITE SHEET =================
+function openInviteSheet(recordId){
+  const c = carers.find(x => x.recordId === recordId);
+  if(!c) return;
+  const firstName = c.name.split(' ')[0];
+  $('inviteTargetName').textContent = firstName;
+
+  const message = `Hi ${firstName}! You've been added as a support worker on Snap Handover. Open this link on your phone to get started: https://snaphandover.netlify.app`;
+  const encodedMsg = encodeURIComponent(message);
+
+  const smsBtn = $('inviteSmsOption');
+  const waBtn = $('inviteWaOption');
+  if(c.phone){
+    const phone = c.phone.replace(/[^\d+]/g, '');
+    smsBtn.href = `sms:${phone}?&body=${encodedMsg}`;
+    smsBtn.classList.remove('disabled');
+    $('inviteSmsDetail').textContent = c.phone;
+    waBtn.href = `https://wa.me/${phone.replace('+','')}?text=${encodedMsg}`;
+    waBtn.classList.remove('disabled');
+    $('inviteWaDetail').textContent = c.phone;
+  } else {
+    smsBtn.removeAttribute('href'); smsBtn.classList.add('disabled');
+    waBtn.removeAttribute('href'); waBtn.classList.add('disabled');
+  }
+
+  const emailBtn = $('inviteEmailOption');
+  if(c.email){
+    const subject = encodeURIComponent('You\'re invited to Snap Handover');
+    emailBtn.href = `mailto:${c.email}?subject=${subject}&body=${encodedMsg}`;
+    emailBtn.classList.remove('disabled');
+    $('inviteEmailDetail').textContent = c.email;
+  } else {
+    emailBtn.removeAttribute('href'); emailBtn.classList.add('disabled');
+  }
+
+  $('inviteOverlay').classList.add('active');
+}
+[$('inviteSmsOption'), $('inviteWaOption'), $('inviteEmailOption')].forEach(el => {
+  el.addEventListener('click', (e) => {
+    if(el.classList.contains('disabled')){ e.preventDefault(); return; }
+    setTimeout(() => $('inviteOverlay').classList.remove('active'), 300);
+  });
+});
+$('inviteCancelBtn').addEventListener('click', () => $('inviteOverlay').classList.remove('active'));
 
 resetCaptureUI();
 </script>
