@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <title>Snap Handover</title>
 <link rel="icon" type="image/png" href="about:blank" data-logo-icon="LOGO_RD">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#00C4B4">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Snap Handover">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -178,6 +184,24 @@
   .ww-footer img{width:16px; height:16px; border-radius:3px;}
   .ww-footer:hover{color:#fff;}
 
+  /* ---------- INSTALL BANNER ---------- */
+  .install-banner{
+    display:none; align-items:center; gap:10px; background:rgba(255,255,255,0.14);
+    border:1.5px solid rgba(255,255,255,0.35); border-radius:14px; padding:12px 14px;
+    margin-top:20px; width:100%; max-width:340px; text-align:left;
+  }
+  .install-banner.active{display:flex;}
+  .install-banner .ib-icon{font-size:22px;}
+  .install-banner .ib-text{flex:1; font-size:12px; color:#fff; line-height:1.4;}
+  .install-banner .ib-text b{display:block; font-size:13px; margin-bottom:1px;}
+  .install-banner button{
+    background:var(--yellow); color:var(--navy); border:none; padding:8px 14px;
+    border-radius:10px; font-weight:700; font-size:12px; cursor:pointer; white-space:nowrap;
+  }
+  .install-banner .ib-dismiss{
+    background:none; color:rgba(255,255,255,0.6); font-size:16px; padding:2px 4px; font-weight:400;
+  }
+
   /* ---------- NAV / APPBAR ---------- */
   nav.bottom{position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--line); display:flex; z-index:20;}
   nav.bottom button{flex:1; background:none; border:none; padding:12px 6px 10px; font-family:'Poppins'; font-size:11px; font-weight:600; color:#B0AA97; display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer;}
@@ -218,6 +242,14 @@ window.LOGO_RD_URI = LOGO_RD_URI;
   </div>
   <div class="login-divider">OR</div>
   <button id="managerLoginBtn">🛠 Manager Login</button>
+
+  <div class="install-banner" id="installBanner">
+    <div class="ib-icon">📲</div>
+    <div class="ib-text" id="installBannerText"><b>Add to your home screen</b>Opens like a real app, no browser bar.</div>
+    <button id="installActionBtn">Add</button>
+    <button class="ib-dismiss" id="installDismissBtn">✕</button>
+  </div>
+
   <a class="ww-footer" href="https://westeffects.com/westworks/" target="_blank">
     <img src="LOGO_WW" alt=""> Built by WestWorks
   </a>
@@ -994,6 +1026,62 @@ function openInviteSheet(recordId){
   });
 });
 $('inviteCancelBtn').addEventListener('click', () => $('inviteOverlay').classList.remove('active'));
+
+// ================= PWA INSTALL =================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW registration failed', err));
+  });
+}
+
+let deferredInstallPrompt = null;
+let installDismissed = false;
+
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+function isIOS(){
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  showInstallBanner('android');
+});
+
+function showInstallBanner(kind){
+  if (installDismissed || isStandalone()) return;
+  const banner = $('installBanner');
+  const text = $('installBannerText');
+  const btn = $('installActionBtn');
+  if (kind === 'ios'){
+    text.innerHTML = '<b>Add to your home screen</b>Tap Share, then "Add to Home Screen".';
+    btn.style.display = 'none';
+  } else {
+    text.innerHTML = '<b>Add to your home screen</b>Opens like a real app, no browser bar.';
+    btn.style.display = 'inline-block';
+  }
+  banner.classList.add('active');
+}
+
+$('installActionBtn').addEventListener('click', async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  $('installBanner').classList.remove('active');
+});
+$('installDismissBtn').addEventListener('click', () => {
+  installDismissed = true;
+  $('installBanner').classList.remove('active');
+});
+
+// iOS never fires beforeinstallprompt -- show manual instructions instead,
+// but only if not already installed and only in Safari (not other iOS browsers, which can't install).
+if (isIOS() && !isStandalone() && /safari/i.test(navigator.userAgent) && !/crios|fxios/i.test(navigator.userAgent)) {
+  showInstallBanner('ios');
+}
 
 resetCaptureUI();
 </script>
